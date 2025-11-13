@@ -134,7 +134,7 @@ const TriviaGame = ({ userId }: TriviaGameProps) => {
     );
   }
   
-  const options = JSON.parse(question.options);
+  const options = question.options;
 
   return (
     <Card className="shadow-soft border-border/50">
