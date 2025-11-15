@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import ParticleBackground from "@/components/ParticleBackground";
+import Confetti from "@/components/Confetti";
+import AchievementNotification from "@/components/AchievementNotification";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,11 +21,19 @@ interface UserStats {
   badges: string[];
 }
 
+interface Achievement {
+  badge: string;
+  icon: string;
+}
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<UserStats | null>(null);
+  const [previousBadges, setPreviousBadges] = useState<string[]>([]);
+  const [newAchievement, setNewAchievement] = useState<Achievement | null>(null);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -79,6 +89,20 @@ const Dashboard = () => {
     if (averageScore >= 80) badges.push("Eco Expert");
     if (averageScore === 100) badges.push("Perfect Score");
 
+    // Check for new badges
+    const newBadges = badges.filter(badge => !previousBadges.includes(badge));
+    if (newBadges.length > 0 && previousBadges.length > 0) {
+      // Show the first new badge with confetti
+      const newBadge = newBadges[0];
+      setNewAchievement({
+        badge: newBadge,
+        icon: getBadgeIcon(newBadge),
+      });
+      setShowConfetti(true);
+    }
+
+    setPreviousBadges(badges);
+
     setStats({
       treeLevel,
       waterCount,
@@ -119,6 +143,19 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-subtle animate-fade-in relative overflow-hidden">
       <ParticleBackground />
+      
+      {/* Confetti Effect */}
+      <Confetti active={showConfetti} onComplete={() => setShowConfetti(false)} />
+      
+      {/* Achievement Notification */}
+      {newAchievement && (
+        <AchievementNotification
+          badge={newAchievement.badge}
+          icon={newAchievement.icon}
+          onClose={() => setNewAchievement(null)}
+        />
+      )}
+      
       <div className="relative z-10">
         <Navbar user={user} />
       
