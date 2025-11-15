@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
+import ParticleBackground from "@/components/ParticleBackground";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -116,8 +117,10 @@ const Dashboard = () => {
   const userInitials = userName.substring(0, 2).toUpperCase();
 
   return (
-    <div className="min-h-screen bg-gradient-subtle animate-fade-in">
-      <Navbar user={user} />
+    <div className="min-h-screen bg-gradient-subtle animate-fade-in relative overflow-hidden">
+      <ParticleBackground />
+      <div className="relative z-10">
+        <Navbar user={user} />
       
       <main className="container py-8 space-y-8">
         {/* User Profile Section */}
@@ -355,6 +358,7 @@ const Dashboard = () => {
           </div>
         </div>
       </main>
+      </div>
     </div>
   );
 };
